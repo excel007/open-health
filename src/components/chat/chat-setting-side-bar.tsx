@@ -1,22 +1,22 @@
 'use client';
 
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import React, {useEffect, useMemo, useState} from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import React, { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import {AssistantMode, AssistantModeListResponse} from "@/app/api/assistant-modes/route";
-import {ChatRoomGetResponse} from "@/app/api/chat-rooms/[id]/route";
-import {AssistantModePatchRequest} from "@/app/api/assistant-modes/[id]/route";
-import {LLMProvider, LLMProviderListResponse} from "@/app/api/llm-providers/route";
-import {LLMProviderModel, LLMProviderModelListResponse} from "@/app/api/llm-providers/[id]/models/route";
+import { AssistantMode, AssistantModeListResponse } from "@/app/api/assistant-modes/route";
+import { ChatRoomGetResponse } from "@/app/api/chat-rooms/[id]/route";
+import { AssistantModePatchRequest } from "@/app/api/assistant-modes/[id]/route";
+import { LLMProvider, LLMProviderListResponse } from "@/app/api/llm-providers/route";
+import { LLMProviderModel, LLMProviderModelListResponse } from "@/app/api/llm-providers/[id]/models/route";
 
 interface ChatSettingSideBarProps {
     isRightSidebarOpen: boolean;
     chatRoomId: string;
 }
 
-export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: ChatSettingSideBarProps
+export default function ChatSettingSideBar({ isRightSidebarOpen, chatRoomId }: ChatSettingSideBarProps
 ) {
     const [selectedAssistantMode, setSelectedAssistantMode] = useState<AssistantMode>();
     const [selectedLLMProvider, setSelectedLLMProvider] = useState<LLMProvider>();
@@ -91,10 +91,10 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
     }, [selectedLLMProvider]);
 
     const onChangeChatRoom = async ({
-                                        assistantModeId,
-                                        llmProviderId,
-                                        llmProviderModelId,
-                                    }: {
+        assistantModeId,
+        llmProviderId,
+        llmProviderModelId,
+    }: {
         assistantModeId?: string
         llmProviderId?: string
         llmProviderModelId?: string | null
@@ -102,8 +102,8 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
         if (chatRoomData === undefined) return;
         const response = await fetch(`/api/chat-rooms/${chatRoomId}`, {
             method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({assistantModeId, llmProviderId, llmProviderModelId}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assistantModeId, llmProviderId, llmProviderModelId }),
         });
         const data = await response.json();
 
@@ -128,7 +128,7 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
     const onChangeAssistantMode = async (assistantModeId: string, body: AssistantModePatchRequest) => {
         const response = await fetch(`/api/assistant-modes/${assistantModeId}`, {
             method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
         })
         const data = await response.json();
@@ -145,9 +145,9 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
     }
 
     const onLLMProviderChange = async ({
-                                           apiKey,
-                                           apiURL,
-                                       }: {
+        apiKey,
+        apiURL,
+    }: {
         apiKey?: string,
         apiURL?: string,
     }) => {
@@ -161,14 +161,14 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
         setSelectedLLMProvider(data);
         await fetch(`/api/llm-providers/${selectedLLMProvider.id}`, {
             method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
         await llmProvidersMutate();
         setSelectedLLMProvider(data)
 
         // Patch ChatRoom with new LLMProvider
-        await onChangeChatRoom({llmProviderId: selectedLLMProvider.id, llmProviderModelId: null});
+        await onChangeChatRoom({ llmProviderId: selectedLLMProvider.id, llmProviderModelId: null });
     }
 
     return <div className={`border-l bg-gray-50 flex flex-col transition-all duration-300 ease-in-out
@@ -180,14 +180,14 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                     <h4 className="text-sm font-medium">Model Settings</h4>
                     <div className="space-y-2">
                         <Select value={selectedLLMProvider?.id}
-                                onValueChange={(value) => {
-                                    setSelectedLLMProvider(llmProvidersData?.llmProviders.find((provider) => provider.id === value));
-                                    setLLMProviderModels([])
-                                    setSelectedLLMProviderModel(undefined);
-                                    onChangeChatRoom({llmProviderId: value, llmProviderModelId: null});
-                                }}>
+                            onValueChange={(value) => {
+                                setSelectedLLMProvider(llmProvidersData?.llmProviders.find((provider) => provider.id === value));
+                                setLLMProviderModels([])
+                                setSelectedLLMProviderModel(undefined);
+                                onChangeChatRoom({ llmProviderId: value, llmProviderModelId: null });
+                            }}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select company"/>
+                                <SelectValue placeholder="Select company" />
                             </SelectTrigger>
                             <SelectContent>
                                 {llmProvidersData?.llmProviders.map((provider) => <SelectItem
@@ -196,9 +196,9 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                             </SelectContent>
                         </Select>
                         <Select value={selectedLLMProviderModel?.id}
-                                onValueChange={(value) => setSelectedLLMProviderModel(llmProviderModels.find((model) => model.id === value))}>
+                            onValueChange={(value) => setSelectedLLMProviderModel(llmProviderModels.find((model) => model.id === value))}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select model"/>
+                                <SelectValue placeholder="Select model" />
                             </SelectTrigger>
                             <SelectContent>
                                 {llmProviderModels.map((model) => (
@@ -217,7 +217,7 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                                 type="text"
                                 placeholder="API endpoint (default: http://localhost:11434)"
                                 value={selectedLLMProvider?.apiURL}
-                                onChange={(e) => onLLMProviderChange({apiURL: e.target.value})}
+                                onChange={(e) => onLLMProviderChange({ apiURL: e.target.value })}
                             />
                         )}
                         {selectedLLMProvider?.id !== 'ollama' && (
@@ -225,8 +225,9 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                                 <Input
                                     type={showApiKey ? "text" : "password"}
                                     placeholder="Enter API key"
-                                    value={selectedLLMProvider?.apiKey || ''}
-                                    onChange={(e) => onLLMProviderChange({apiKey: e.target.value})}
+                                    value="hello"
+                                    // value={selectedLLMProvider?.apiKey || ''}
+                                    onChange={(e) => onLLMProviderChange({ apiKey: e.target.value })}
                                     className="pr-16"
                                 />
                                 <button
@@ -246,8 +247,8 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                         value={selectedAssistantMode?.systemPrompt || ''}
                         onChange={async (e) => {
                             if (selectedAssistantMode) {
-                                setSelectedAssistantMode({...selectedAssistantMode, systemPrompt: e.target.value});
-                                await onChangeAssistantMode(selectedAssistantMode.id, {systemPrompt: e.target.value});
+                                setSelectedAssistantMode({ ...selectedAssistantMode, systemPrompt: e.target.value });
+                                await onChangeAssistantMode(selectedAssistantMode.id, { systemPrompt: e.target.value });
                             }
                         }}
                         rows={6}
@@ -263,9 +264,9 @@ export default function ChatSettingSideBar({isRightSidebarOpen, chatRoomId}: Cha
                                 key={assistantMode.id}
                                 className={`w-full p-3 rounded-lg text-left border transition-colors
                         ${selectedAssistantMode?.id === assistantMode.id ? 'bg-white border-gray-300' :
-                                    'border-transparent hover:bg-gray-100'}`}
+                                        'border-transparent hover:bg-gray-100'}`}
                                 onClick={async () => {
-                                    await onChangeChatRoom({assistantModeId: assistantMode.id});
+                                    await onChangeChatRoom({ assistantModeId: assistantMode.id });
                                 }}
                             >
                                 <div className="text-sm font-medium">{assistantMode.name}</div>

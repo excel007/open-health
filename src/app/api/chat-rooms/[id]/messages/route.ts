@@ -135,7 +135,8 @@ export async function POST(
                     }
                 } else if (chatRoom.llmProviderId === 'openai') {
                     // OpenAI API call
-                    const openai = new OpenAI({apiKey: llmProvider.apiKey, baseURL: llmProvider.apiURL});
+                    // const openai = new OpenAI({apiKey: llmProvider.apiKey, baseURL: llmProvider.apiURL});
+                    const openai = new OpenAI({apiKey: process.env.apiKey_OpenAI , baseURL: llmProvider.apiURL});
                     const llmProviderModelId = chatRoom.llmProviderModelId;
                     if (!llmProviderModelId) throw new Error('No LLM model ID provided');
                     const chatStream = await openai.chat.completions.create({

@@ -9,62 +9,72 @@ datasource db {
 
 model HealthData {
   id        String   @id @default(cuid())
-  type      String // PERSONAL_INFO
+  type      String
   data      Json
   metadata  Json?
-  filePath  String?
-  fileType  String? // image/jpeg, image/png, application/pdf
-  status    String   @default("COMPLETED") // PARSING, COMPLETED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  filePath  String?  @map("file_path")
+  fileType  String?  @map("file_type")
+  status    String   @default("COMPLETED")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("health_data")
 }
 
 model ChatRoom {
   id                 String   @id @default(cuid())
   name               String
-  assistantModeId    String
-  llmProviderId      String
-  llmProviderModelId String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  assistantModeId    String   @map("assistant_mode_id")
+  llmProviderId      String   @map("llm_provider_id")
+  llmProviderModelId String?  @map("llm_provider_model_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   assistantMode AssistantMode @relation(fields: [assistantModeId], references: [id])
   llmProvider   LLMProvider   @relation(fields: [llmProviderId], references: [id])
   chatMessages  ChatMessage[]
+
+  @@map("chat_room")
 }
 
 model ChatMessage {
   id         String   @id @default(cuid())
   content    String
-  chatRoomId String
+  chatRoomId String   @map("chat_room_id")
   role       ChatRole
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+
+  @@map("chat_message")
 }
 
 model AssistantMode {
   id           String   @id @default(cuid())
   name         String
   description  String
-  systemPrompt String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  systemPrompt String   @map("system_prompt")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   chatRoom ChatRoom[]
+
+  @@map("assistant_mode")
 }
 
 model LLMProvider {
   id        String   @id @default(cuid())
   name      String
-  apiKey    String   @default("")
-  apiURL    String
+  apiKey    String   @default("") @map("api_key")
+  apiURL    String   @map("api_url")
   order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   chatRooms ChatRoom[]
+
+  @@map("llm_provider")
 }
 
 enum ChatRole {
